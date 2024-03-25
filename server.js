@@ -5,7 +5,9 @@ const fs = require('fs')
 const path = require('path')
 const resolve = file => path.resolve(__dirname, file)
 
-const isProd = process.env.NODE_ENE === "production"
+const isProd = process.env.NODE_ENV === "production"
+
+console.log('isProd', isProd)
 
 const createRenderer = (bundle, options) => {
     return createBundleRenderer(bundle, Object.assign(options, {
@@ -22,7 +24,7 @@ if (isProd) {
     const template = fs.readFileSync(templatePath, 'utf-8')
 
     renderer = createRenderer(bundle, {
-        // 推荐
+        runInNewContext: false, // 推荐
         template, // （可选）页面模板
         clientManifest // （可选）客户端构建 manifest
     })

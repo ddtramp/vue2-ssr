@@ -1,20 +1,21 @@
 import Vue from 'vue'
 import { createApp } from './app'
 
-Vue.mixin({
-    beforeMount () {
-        const { asyncData } = this.$options
-        if (asyncData) {
-            // 将获取数据操作分配给 promise
-            // 以便在组件中，我们可以在数据准备就绪后
-            // 通过运行 `this.dataPromise.then(...)` 来执行其他任务
-            this.dataPromise = asyncData({
-                store: this.$store,
-                route: this.$route
-            })
-        }
-    }
-})
+// GET DATA METHOD 2
+// Vue.mixin({
+//     beforeMount () {
+//         const { asyncData } = this.$options
+//         if (asyncData) {
+//             // 将获取数据操作分配给 promise
+//             // 以便在组件中，我们可以在数据准备就绪后
+//             // 通过运行 `this.dataPromise.then(...)` 来执行其他任务
+//             this.dataPromise = asyncData({
+//                 store: this.$store,
+//                 route: this.$route
+//             })
+//         }
+//     }
+// })
 
 // 客户端特定引导逻辑……
 const { app, router, store } = createApp()
@@ -23,6 +24,7 @@ if (window.__INITIAL_STATE__) {
     store.replaceState(window.__INITIAL_STATE__)
 }
 
+// GET DATA METHOD 1
 // 这里假定 App.vue 模板中根元素具有 `id="app"`
 router.onReady(() => {
     // 添加路由钩子函数，用于处理 asyncData.
@@ -44,10 +46,13 @@ router.onReady(() => {
             return next()
         }
 
+
+
         // 这里如果有加载指示器 (loading indicator)，就触发
 
         Promise.all(activated.map(c => {
             if (c.asyncData) {
+
                 return c.asyncData({ store, route: to })
             }
         })).then(() => {
@@ -58,5 +63,8 @@ router.onReady(() => {
         }).catch(next)
     })
 
+    // app.$mount('#app', true) or NODE_ENV = production hydrate will be active;
+    // data-server-rendered="true" can be founded at #app element;
+    // when development, discard existing DOM  
     app.$mount('#app')
 })
